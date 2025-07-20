@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Free Websites – One Place</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* Custom scrollbar & glow */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 10px; }
+    .glow:hover { filter: drop-shadow(0 0 6px #38bdf8); }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans">
+
+  <!-- Header -->
+  <header class="bg-slate-800/70 backdrop-blur-lg sticky top-0 z-50 px-4 py-4 flex justify-between items-center shadow-xl">
+    <h1 class="text-xl sm:text-2xl font-bold tracking-wider">
+      <i class="fas fa-globe text-sky-400 mr-2"></i>All Free Websites
+    </h1>
+    <input id="searchInput" placeholder="Search..." class="bg-slate-700 rounded-full px-4 py-2 text-sm w-32 sm:w-48 focus:outline-none focus:ring-2 focus:ring-sky-400"/>
+  </header>
+
+  <!-- Category Pills -->
+  <nav id="categoryNav" class="flex flex-wrap gap-2 justify-center my-6 px-4">
+    <button class="category-btn bg-sky-500 text-white px-4 py-1 rounded-full text-sm font-medium" data-category="all">All</button>
+    <button class="category-btn bg-slate-600 hover:bg-sky-500 transition px-4 py-1 rounded-full text-sm" data-category="learning">Learning</button>
+    <button class="category-btn bg-slate-600 hover:bg-sky-500 transition px-4 py-1 rounded-full text-sm" data-category="design">Design</button>
+    <button class="category-btn bg-slate-600 hover:bg-sky-500 transition px-4 py-1 rounded-full text-sm" data-category="tools">Tools</button>
+    <button class="category-btn bg-slate-600 hover:bg-sky-500 transition px-4 py-1 rounded-full text-sm" data-category="hosting">Hosting</button>
+    <button class="category-btn bg-slate-600 hover:bg-sky-500 transition px-4 py-1 rounded-full text-sm" data-category="media">Media</button>
+  </nav>
+
+  <!-- Main Grid -->
+  <main id="siteGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 px-4 pb-10">
+    <!-- Cards injected by JS -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-slate-400 text-sm">
+    Built with Samir
+  </footer>
+
+  <script>
+    const sites = [
+      {name:"Khan Academy",url:"https://khanacademy.org",icon:"fas fa-graduation-cap",category:"learning"},
+      {name:"Coursera",url:"https://coursera.org",icon:"fas fa-university",category:"learning"},
+      {name:"Duolingo",url:"https://duolingo.com",icon:"fas fa-language",category:"learning"},
+      {name:"Codecademy",url:"https://codecademy.com",icon:"fas fa-code",category:"learning"},
+      {name:"GitHub",url:"https://github.com",icon:"fab fa-github",category:"tools"},
+      {name:"Vercel",url:"https://vercel.com",icon:"fas fa-cloud",category:"hosting"},
+      {name:"Netlify",url:"https://netlify.com",icon:"fas fa-server",category:"hosting"},
+      {name:"Canva",url:"https://canva.com",icon:"fas fa-palette",category:"design"},
+      {name:"Figma",url:"https://figma.com",icon:"fas fa-drafting-compass",category:"design"},
+      {name:"Pexels",url:"https://pexels.com",icon:"fas fa-images",category:"media"},
+      {name:"Unsplash",url:"https://unsplash.com",icon:"fas fa-camera",category:"media"},
+      {name:"CodePen",url:"https://codepen.io",icon:"fab fa-codepen",category:"tools"},
+      {name:"Stack Overflow",url:"https://stackoverflow.com",icon:"fab fa-stack-overflow",category:"tools"},
+      {name:"Google Fonts",url:"https://fonts.google.com",icon:"fas fa-font",category:"design"},
+      {name:"Open Library",url:"https://openlibrary.org",icon:"fas fa-book-open",category:"learning"},
+      {name:"Pixabay",url:"https://pixabay.com",icon:"fas fa-photo-video",category:"media"}
+    ];
+
+    const grid = document.getElementById('siteGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categoryNav = document.getElementById('categoryNav');
+
+    let currentCategory = 'all';
+
+    function renderCards(filtered = sites) {
+      grid.innerHTML = '';
+      filtered.forEach(site => {
+        const card = document.createElement('a');
+        card.href = site.url;
+        card.target = "_blank";
+        card.className = "bg-slate-800 rounded-xl p-4 flex flex-col items-center gap-3 hover:bg-slate-700 transition duration-300 glow";
+        card.innerHTML = `
+          <i class="${site.icon} text-3xl text-sky-400"></i>
+          <span class="font-medium text-center">${site.name}</span>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Filter functions
+    function filterByCategory(cat) {
+      currentCategory = cat;
+      const searchTerm = searchInput.value.toLowerCase();
+      const filtered = sites.filter(s =>
+        (cat === 'all' || s.category === cat) &&
+        s.name.toLowerCase().includes(searchTerm)
+      );
+      renderCards(filtered);
+    }
+
+    function filterBySearch() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const filtered = sites.filter(s =>
+        (currentCategory === 'all' || s.category === currentCategory) &&
+        s.name.toLowerCase().includes(searchTerm)
+      );
+      renderCards(filtered);
+    }
+
+    // Events
+    categoryNav.addEventListener('click', e => {
+      if (e.target.classList.contains('category-btn')) {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.replace('bg-sky-500', 'bg-slate-600'));
+        e.target.classList.replace('bg-slate-600', 'bg-sky-500');
+        filterByCategory(e.target.dataset.category);
+      }
+    });
+
+    searchInput.addEventListener('input', filterBySearch);
+
+    // Init
+    renderCards();
+  </script>
+</body>
+</html>
